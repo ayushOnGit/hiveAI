@@ -6,6 +6,11 @@ require("dotenv").config();
 const app = express();
 const upload = multer();
 
+// Hello World endpoint
+app.get("/hello", (req, res) => {
+    res.send("Hello, World!");
+});
+
 // Image analysis endpoint
 app.post("/analyze-image", upload.single("image"), async (req, res) => {
     try {
