@@ -25,7 +25,6 @@ app.post("/analyze-image", upload.single("image"), async (req, res) => {
             return res.status(500).json({ error: "Missing GEMINI_API_KEY in .env file" });
         }
 
-        // ✅ Use the latest "gemini-1.5-flash" model
         const response = await axios.post(
             `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
             {
@@ -49,5 +48,38 @@ app.post("/analyze-image", upload.single("image"), async (req, res) => {
     }
 });
 
-// Start server
+// Azure Speech-to-Text endpoint
+app.post("/speech-to-text", upload.single("audio"), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: "No audio file uploaded" });
+        }
+
+        const audioBuffer = req.file.buffer;
+        const azureApiKey = process.env.AZURE_SPEECH_KEY;
+        const azureRegion = process.env.AZURE_SPEECH_REGION;
+
+        if (!azureApiKey || !azureRegion) {
+            return res.status(500).json({ error: "Missing Azure Speech API credentials in .env file" });
+        }
+
+        const response = await axios.post(
+            `https://${azureRegion}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US`,
+            audioBuffer,
+            {
+                headers: {
+                    "Ocp-Apim-Subscription-Key": azureApiKey,
+                    "Content-Type": "audio/wav"
+                }
+            }
+        );
+
+        res.json({ transcription: response.data });
+    } catch (error) {
+        console.error("Error:", error.response?.data || error.message);
+        res.status(500).json({ error: error.message, details: error.response?.data || "Unknown error" });
+    }
+});
+
+
 app.listen(8000, () => console.log("Server running on port 8000"));
