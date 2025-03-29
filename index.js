@@ -136,8 +136,10 @@ app.post("/analyze-image", async (req, res) => {
             { headers: { "Content-Type": "application/json" } }
         );
 
-        console.log(response.data);
-        res.json({ description: response.data });
+         const analysisText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || 
+                            "No description generated";
+
+        res.json({ analysis: analysisText });
     } catch (error) {
         console.error("Error:", error.response?.data || error.message);
         res.status(500).json({ error: error.message, details: error.response?.data || "Unknown error" });
