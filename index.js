@@ -111,12 +111,15 @@ app.post("/analyze-image", async (req, res) => {
             }
         }
 
+        // Convert to a buffer if needed (currently not used directly)
         const imageBuffer = Buffer.from(base64Data, "base64");
+
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
             return res.status(500).json({ error: "Missing GEMINI_API_KEY in .env file" });
         }
 
+        // Note: Changed key from "data" to "buffer" in inline_data
         const response = await axios.post(
             `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
             {
@@ -124,16 +127,16 @@ app.post("/analyze-image", async (req, res) => {
                     {
                         parts: [
                             { text: "Describe this image" },
-                            { inline_data: { mime_type: mimeType, data: base64Data } }
+                            { inline_data: { mime_type: mimeType, buffer: base64Data } }
                         ]
                     }
                 ]
             },
             { headers: { "Content-Type": "application/json" } }
         );
-        console.log(response.data)
-        res.json({ description: response.data });
 
+        console.log(response.data);
+        res.json({ description: response.data });
     } catch (error) {
         console.error("Error:", error.response?.data || error.message);
         res.status(500).json({ error: error.message, details: error.response?.data || "Unknown error" });
