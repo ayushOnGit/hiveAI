@@ -131,7 +131,7 @@ app.post("/analyze-image", async (req, res) => {
             },
             { headers: { "Content-Type": "application/json" } }
         );
-
+        console.log(response.data)
         res.json({ description: response.data });
 
     } catch (error) {
