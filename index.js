@@ -127,7 +127,8 @@ app.post("/analyze-image", async (req, res) => {
                     {
                         parts: [
                             { text: "Describe this image" },
-                            { inline_data: { mime_type: mimeType, buffer: base64Data } }
+                            // CORRECTED: Changed 'buffer' to 'data'
+                            { inline_data: { mime_type: mimeType, data: base64Data } }
                         ]
                     }
                 ]
