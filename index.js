@@ -92,6 +92,11 @@ const axios = require("axios");
 const app = express();
 app.use(express.json({ limit: '10mb' })); // Increase limit if needed
 
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
 // Updated Image analysis endpoint that accepts JSON with base64 string
 app.post("/analyze-image", async (req, res) => {
     try {
